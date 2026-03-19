@@ -26,6 +26,23 @@ services:
       - "${OPENCLAW_BRIDGE_PORT:-18790}:18790"
     init: true
     restart: unless-stopped
+    networks:
+      - default
+      - traefik_cloudflare
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+    labels:
+      - "traefik.enable=true"
+
+      # Router
+      - "traefik.http.routers.openclaw.rule=Host(`o-claw.nguyentracthanh.site`)"
+      - "traefik.docker.network=traefik_cloudflare"
+
+      # TLS
+      - "traefik.http.routers.cv-frontend.entrypoints=web"
+
+      # Service port (IMPORTANT)
+      - "traefik.http.services.openclaw.loadbalancer.server.port=18789"
     command:
       [
         "node",
@@ -76,3 +93,6 @@ services:
     entrypoint: ["node", "dist/index.js"]
     depends_on:
       - openclaw-gateway
+networks:
+  traefik_cloudflare:
+    external: true

@@ -250,6 +250,35 @@ docker compose run --rm openclaw-cli devices approve <requestId>
 
 More detail: [Dashboard](/web/dashboard), [Devices](/cli/devices).
 
+### Public domain / reverse proxy (Traefik, Cloudflare, etc.)
+
+If you publish the gateway on a public HTTPS domain (for example behind Traefik
+and/or Cloudflare) and you see **"pairing required"**, you typically need two
+things:
+
+1. **Allowlist the public Control UI origin** (non-loopback deployments must set
+   full origins):
+
+```bash
+docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins \
+  '["https://YOUR_DOMAIN"]' --strict-json
+
+docker compose up -d openclaw-gateway
+```
+
+2. **Approve the browser device pairing request** (one-time per browser profile):
+
+```bash
+docker compose run --rm openclaw-cli devices list
+docker compose run --rm openclaw-cli devices approve <requestId>
+```
+
+Notes:
+
+- Use `wss://` in the Control UI when your proxy terminates TLS (for example
+  `wss://YOUR_DOMAIN`).
+- If you clear browser storage or switch browsers, you'll need to pair again.
+
 ### Extra mounts (optional)
 
 If you want to mount additional host directories into the containers, set

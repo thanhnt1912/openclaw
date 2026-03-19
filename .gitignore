@@ -85,6 +85,11 @@ apps/ios/*.mobileprovision
 .local/
 docs/.local/
 tmp/
+.openclaw/
+HEARTBEAT.md
+SOUL.md
+TOOLS.md
+docker-compose.yml
 IDENTITY.md
 USER.md
 .tgz
