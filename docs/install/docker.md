@@ -1,10 +1,12 @@
 ---
-summary: "Optional Docker-based setup and onboarding for OpenClaw"
+
+## summary: "Optional Docker-based setup and onboarding for OpenClaw"
+
 read_when:
-  - You want a containerized gateway instead of local installs
-  - You are validating the Docker flow
-title: "Docker"
----
+
+- You want a containerized gateway instead of local installs
+- You are validating the Docker flow
+  title: "Docker"
 
 # Docker (optional)
 
@@ -36,11 +38,7 @@ Sandboxing details: [Sandboxing](/gateway/sandboxing)
 
 ### Quick start (recommended)
 
-<Note>
-Docker defaults here assume bind modes (`lan`/`loopback`), not host aliases. Use bind
-mode values in `gateway.bind` (for example `lan` or `loopback`), not host aliases like
-`0.0.0.0` or `localhost`.
-</Note>
+Docker defaults here assume bind modes (`lan`/`loopback`), not host aliases. Use bind mode values in `gateway.bind` (for example `lan` or `loopback`), not host aliases like `0.0.0.0` or `localhost`.
 
 From repo root:
 
@@ -219,7 +217,7 @@ echo 'source ~/.clawdock/clawdock-helpers.sh' >> ~/.zshrc && source ~/.zshrc
 
 Then use `clawdock-start`, `clawdock-stop`, `clawdock-dashboard`, etc. Run `clawdock-help` for all commands.
 
-See [`ClawDock` Helper README](https://github.com/openclaw/openclaw/blob/main/scripts/shell-helpers/README.md) for details.
+See `[ClawDock` Helper README](https://github.com/openclaw/openclaw/blob/main/scripts/shell-helpers/README.md) for details.
 
 ### Manual flow (compose)
 
@@ -266,7 +264,7 @@ docker compose run --rm openclaw-cli config set gateway.controlUi.allowedOrigins
 docker compose up -d openclaw-gateway
 ```
 
-2. **Approve the browser device pairing request** (one-time per browser profile):
+1. **Approve the browser device pairing request** (one-time per browser profile):
 
 ```bash
 docker compose run --rm openclaw-cli devices list
@@ -394,14 +392,14 @@ export OPENCLAW_HOME_VOLUME="openclaw_home"
 ./docker-setup.sh
 ```
 
-2. **Bake system deps into the image** (repeatable + persistent):
+1. **Bake system deps into the image** (repeatable + persistent):
 
 ```bash
 export OPENCLAW_DOCKER_APT_PACKAGES="git curl jq"
 ./docker-setup.sh
 ```
 
-3. **Install Playwright browsers without `npx`** (avoids npm override conflicts):
+1. **Install Playwright browsers without `npx`** (avoids npm override conflicts):
 
 ```bash
 docker compose run --rm openclaw-cli \
@@ -411,7 +409,7 @@ docker compose run --rm openclaw-cli \
 If you need Playwright to install system deps, rebuild the image with
 `OPENCLAW_DOCKER_APT_PACKAGES` instead of using `--with-deps` at runtime.
 
-4. **Persist Playwright browser downloads**:
+1. **Persist Playwright browser downloads**:
 
 - Set `PLAYWRIGHT_BROWSERS_PATH=/home/node/.cache/ms-playwright` in
   `docker-compose.yml`.
@@ -585,7 +583,7 @@ container. The gateway stays on your host, but the tool execution is isolated:
 - per-scope workspace folder mounted at `/workspace`
 - optional agent workspace access (`agents.defaults.sandbox.workspaceAccess`)
 - allow/deny tool policy (deny wins)
-- inbound media is copied into the active sandbox workspace (`media/inbound/*`) so tools can read it (with `workspaceAccess: "rw"`, this lands in the agent workspace)
+- inbound media is copied into the active sandbox workspace (`media/inbound/`\*) so tools can read it (with `workspaceAccess: "rw"`, this lands in the agent workspace)
 
 Warning: `scope: "shared"` disables cross-session isolation. All sessions share
 one container and one workspace.
@@ -863,7 +861,7 @@ Example:
 
 ## Troubleshooting
 
-- Image missing: build with [`scripts/sandbox-setup.sh`](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh) or set `agents.defaults.sandbox.docker.image`.
+- Image missing: build with `[scripts/sandbox-setup.sh](https://github.com/openclaw/openclaw/blob/main/scripts/sandbox-setup.sh)` or set `agents.defaults.sandbox.docker.image`.
 - Container not running: it will auto-create per session on demand.
 - Permission errors in sandbox: set `docker.user` to a UID:GID that matches your
   mounted workspace ownership (or chown the workspace folder).
