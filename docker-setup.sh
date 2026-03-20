@@ -2,7 +2,8 @@
 set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
-COMPOSE_FILE="$ROOT_DIR/docker-compose.yml"
+ENV_FILE="${OPENCLAW_ENV_FILE:-$ROOT_DIR/.env}"
+COMPOSE_FILE="${OPENCLAW_COMPOSE_FILE:-$ROOT_DIR/docker-compose.yml}"
 EXTRA_COMPOSE_FILE="$ROOT_DIR/docker-compose.extra.yml"
 IMAGE_NAME="${OPENCLAW_IMAGE:-openclaw:local}"
 EXTRA_MOUNTS="${OPENCLAW_EXTRA_MOUNTS:-}"
@@ -186,7 +187,9 @@ fi
 if [[ -z "$DOCKER_SOCKET_PATH" ]]; then
   DOCKER_SOCKET_PATH="/var/run/docker.sock"
 fi
-if is_truthy_value "$RAW_SANDBOX_SETTING"; then
+if [[ "${OPENCLAW_SKIP_SANDBOX_BOOTSTRAP:-}" == "1" ]]; then
+  SANDBOX_ENABLED=""
+elif is_truthy_value "$RAW_SANDBOX_SETTING"; then
   SANDBOX_ENABLED="1"
 fi
 
@@ -256,10 +259,10 @@ if [[ -z "${OPENCLAW_GATEWAY_TOKEN:-}" ]]; then
     OPENCLAW_GATEWAY_TOKEN="$EXISTING_CONFIG_TOKEN"
     echo "Reusing gateway token from $OPENCLAW_CONFIG_DIR/openclaw.json"
   else
-    DOTENV_GATEWAY_TOKEN="$(read_env_gateway_token "$ROOT_DIR/.env" || true)"
+    DOTENV_GATEWAY_TOKEN="$(read_env_gateway_token "$ENV_FILE" || true)"
     if [[ -n "$DOTENV_GATEWAY_TOKEN" ]]; then
       OPENCLAW_GATEWAY_TOKEN="$DOTENV_GATEWAY_TOKEN"
-      echo "Reusing gateway token from $ROOT_DIR/.env"
+      echo "Reusing gateway token from $ENV_FILE"
     elif command -v openssl >/dev/null 2>&1; then
       OPENCLAW_GATEWAY_TOKEN="$(openssl rand -hex 32)"
     else
@@ -372,7 +375,6 @@ for compose_file in "${COMPOSE_FILES[@]}"; do
   COMPOSE_HINT+=" -f ${compose_file}"
 done
 
-ENV_FILE="$ROOT_DIR/.env"
 upsert_env() {
   local file="$1"
   shift

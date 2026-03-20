@@ -46,7 +46,9 @@ From repo root:
 ./docker-setup.sh
 ```
 
-This script:
+For a **production-oriented** Compose layout (GHCR image default, log rotation, no agent sandbox / `docker.sock` bootstrap), see [Docker production](/install/docker-production).
+
+`docker-setup.sh` (default Compose file):
 
 - builds the gateway image locally (or pulls a remote image if `OPENCLAW_IMAGE` is set)
 - runs onboarding
